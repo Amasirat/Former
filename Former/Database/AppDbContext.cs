@@ -48,5 +48,10 @@ public class AppDbContext : IdentityDbContext<User>
         optionsBuilder.UseNpgsql(_config.GetConnectionString("MainDatabase"));
     }
     
+    public DbSet<Form> Forms { get; set; }
+    public DbSet<FormField> FormFields { get; set; }
+    public DbSet<FormSubmission> FormSubmissions { get; set; }
+    public DbSet<FormSubmissionFile> FormSubmissionFiles { get; set; }
+    
     private IConfiguration _config;
 }

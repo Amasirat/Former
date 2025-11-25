@@ -1,4 +1,6 @@
 using Former.Database;
+using Former.Database.Repositories;
+using Former.Database.Repositories.Interfaces;
 using Former.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,7 @@ public static class Program
         var builder = WebApplication.CreateBuilder(args);
         ConfigureAuth(builder.Services);
         ConfigureServices(builder.Services);
+        ConfigureRepositories(builder.Services);
 
         var app = builder.Build();
         
@@ -21,6 +24,11 @@ public static class Program
     { 
         services.AddControllersWithViews();
         services.AddDbContext<AppDbContext>();
+    }
+    // Add your repository implementations here using AddScoped
+    private static void ConfigureRepositories(IServiceCollection services)
+    {
+        services.AddScoped<IFormRepository, FormRepository>();
     }
     
     private static void ConfigureAuth(IServiceCollection services)
@@ -72,8 +80,8 @@ public static class Program
         app.UseRouting();
 
         app.UseAuthorization();
-        
         app.UseAuthentication();
+        
         app.MapStaticAssets();
 
         app.MapControllerRoute(

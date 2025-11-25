@@ -20,8 +20,8 @@ public class Form
     [Column("status"), EnumDataType(typeof(StatusEnum))]
     public StatusEnum Status { get; set; }
 
-    [Column("is_authorized")]
-    public bool IsAuthorized { get; set; } = false;
+    [Column("is_authorized_limited")]
+    public bool IsAuthorizedLimited { get; set; } = false;
     
     [Column("description"), MaxLength(512)]
     public string? Description { get; set; }
