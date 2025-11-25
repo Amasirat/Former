@@ -7,39 +7,46 @@ namespace Former.Database;
 
 public class AppDbContext : IdentityDbContext<User>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+
+    public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration)
     {
+        _config = configuration;
     }
-    
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-    }
-
-    // Takes roles in strings and sets up a list filled with IdentityRole entities
-    private List<IdentityRole> GetIdentityRoles(List<string> roleStrings)
-    {
-        throw new NotImplementedException();
-    }
-    
-    // This is for returning a default IdentityRole list for testing purposes
-    private static List<IdentityRole> GetDefaultRoles()
-    {
-        return
-        [
+        builder.Entity<IdentityRole>().HasData(new List<IdentityRole>
+        {
             new IdentityRole
             {
-                Id = "FormCreator",
-                Name = "FormCreator",
-                NormalizedName = "FORMCREATOR"
+                Id = "admin",
+                Name = "Admin",
+                NormalizedName = "ADMIN",
+                ConcurrencyStamp = Guid.Empty.ToString()
             },
-
+            new IdentityRole
+            {
+                Id = "form_creator",
+                Name = "FormCreator",
+                NormalizedName = "FORM_CREATOR",
+                ConcurrencyStamp = Guid.Empty.ToString()
+            },
             new IdentityRole
             {
                 Id = "user",
                 Name = "User",
-                NormalizedName = "USER"
+                NormalizedName = "USER",
+                ConcurrencyStamp = Guid.Empty.ToString(),
             }
-        ];
+        });
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.UseNpgsql(_config.GetConnectionString("MainDatabase"));
+    }
+    
+    private IConfiguration _config;
 }

@@ -10,10 +10,6 @@ public static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         ConfigureAuth(builder.Services);
-        ConfigureDatabase(builder.Services, builder.
-            Configuration.
-            GetConnectionString("DefaultConnection"));
-        
         ConfigureServices(builder.Services);
 
         var app = builder.Build();
@@ -24,17 +20,7 @@ public static class Program
     private static void ConfigureServices(IServiceCollection services)
     { 
         services.AddControllersWithViews();
-    }
-    
-    // This method is just to inject database provider to EntityFramework
-    private static void ConfigureDatabase(IServiceCollection services, string? connectionString)
-    {
-        ArgumentNullException.ThrowIfNull(connectionString);
-
-        services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString);
-        });
+        services.AddDbContext<AppDbContext>();
     }
     
     private static void ConfigureAuth(IServiceCollection services)
@@ -94,8 +80,6 @@ public static class Program
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
             .WithStaticAssets();
-
-
         app.Run();
     }
 }
