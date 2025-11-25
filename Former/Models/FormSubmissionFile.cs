@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Former.Models;
 
-[Table("submission_files")]
-public class SubmissionFile
+[Table("form_submission_files")]
+public class FormSubmissionFile
 {
     [Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
     public ulong Id { get; set; }
     
     [ForeignKey("submission_id")]
-    public required Submission Submission { get; set; }
+    public required FormSubmission FormSubmission { get; set; }
     
     [Column("file_name")]
     public required string FileName { get; set; }

@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Former.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251125115303_Initial_v0.1.1")]
-    partial class Initial_v011
+    [Migration("20251125135843_changedFormSubmission_v0.1")]
+    partial class changedFormSubmission_v01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,21 @@ namespace Former.Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("FormFormField", b =>
+                {
+                    b.Property<decimal>("FormFieldsId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<decimal>("FormsId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("FormFieldsId", "FormsId");
+
+                    b.HasIndex("FormsId");
+
+                    b.ToTable("FormFormField");
+                });
 
             modelBuilder.Entity("Former.Models.Form", b =>
                 {
@@ -102,16 +117,14 @@ namespace Former.Database.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("field_options");
 
-                    b.Property<decimal?>("FormId")
-                        .HasColumnType("numeric(20,0)");
-
                     b.Property<bool>("IsRequired")
                         .HasColumnType("boolean")
                         .HasColumnName("is_required");
 
                     b.Property<string>("Label")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("label");
 
                     b.Property<string>("Name")
@@ -137,11 +150,84 @@ namespace Former.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FormId");
+                    b.HasIndex("user_id");
+
+                    b.ToTable("form_fields");
+                });
+
+            modelBuilder.Entity("Former.Models.FormSubmission", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<JsonNode>("SubmissionData")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("submission_data");
+
+                    b.Property<decimal>("form_id")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<string>("user_id")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("form_id");
 
                     b.HasIndex("user_id");
 
-                    b.ToTable("submissions");
+                    b.ToTable("form_submissions");
+                });
+
+            modelBuilder.Entity("Former.Models.FormSubmissionFile", b =>
+                {
+                    b.Property<decimal>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ContentFormat")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content_format");
+
+                    b.Property<long>("ContentSize")
+                        .HasColumnType("bigint")
+                        .HasColumnName("content_size");
+
+                    b.Property<byte>("ContentType")
+                        .HasColumnType("smallint")
+                        .HasColumnName("content_type");
+
+                    b.Property<string>("FileDirectory")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_directory");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_name");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("uploaded_at");
+
+                    b.Property<decimal>("submission_id")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("submission_id");
+
+                    b.ToTable("form_submission_files");
                 });
 
             modelBuilder.Entity("Former.Models.User", b =>
@@ -363,6 +449,21 @@ namespace Former.Database.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FormFormField", b =>
+                {
+                    b.HasOne("Former.Models.FormField", null)
+                        .WithMany()
+                        .HasForeignKey("FormFieldsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Former.Models.Form", null)
+                        .WithMany()
+                        .HasForeignKey("FormsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Former.Models.Form", b =>
                 {
                     b.HasOne("Former.Models.User", "User")
@@ -374,15 +475,39 @@ namespace Former.Database.Migrations
 
             modelBuilder.Entity("Former.Models.FormField", b =>
                 {
-                    b.HasOne("Former.Models.Form", null)
-                        .WithMany("FormFields")
-                        .HasForeignKey("FormId");
-
                     b.HasOne("Former.Models.User", "User")
                         .WithMany("FormFields")
                         .HasForeignKey("user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Former.Models.FormSubmission", b =>
+                {
+                    b.HasOne("Former.Models.Form", "Form")
+                        .WithMany()
+                        .HasForeignKey("form_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Former.Models.User", "User")
+                        .WithMany("Submissions")
+                        .HasForeignKey("user_id");
+
+                    b.Navigation("Form");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Former.Models.FormSubmissionFile", b =>
+                {
+                    b.HasOne("Former.Models.FormSubmission", "FormSubmission")
+                        .WithMany("SubmissionFiles")
+                        .HasForeignKey("submission_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FormSubmission");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -436,9 +561,9 @@ namespace Former.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Former.Models.Form", b =>
+            modelBuilder.Entity("Former.Models.FormSubmission", b =>
                 {
-                    b.Navigation("FormFields");
+                    b.Navigation("SubmissionFiles");
                 });
 
             modelBuilder.Entity("Former.Models.User", b =>
@@ -446,6 +571,8 @@ namespace Former.Database.Migrations
                     b.Navigation("FormFields");
 
                     b.Navigation("Forms");
+
+                    b.Navigation("Submissions");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,8 +4,8 @@ using System.Text.Json.Nodes;
 
 namespace Former.Models;
 
-[Table("submissions")]
-public class Submission
+[Table("form_submissions")]
+public class FormSubmission
 {
     [Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
     public ulong Id { get; set; }
@@ -19,7 +19,7 @@ public class Submission
     [Column("submission_data", TypeName = "jsonb")]
     public required JsonNode SubmissionData { get; set; }
     
-    public List<SubmissionFile> SubmissionFiles { get; set; } = new List<SubmissionFile>();
+    public List<FormSubmissionFile> SubmissionFiles { get; set; } = new List<FormSubmissionFile>();
     
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();

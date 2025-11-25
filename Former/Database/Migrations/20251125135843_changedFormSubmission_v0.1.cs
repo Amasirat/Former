@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Former.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial_v01 : Migration
+    public partial class changedFormSubmission_v01 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -161,6 +161,32 @@ namespace Former.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "form_fields",
+                columns: table => new
+                {
+                    id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    label = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    description = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    type = table.Column<byte>(type: "smallint", nullable: false),
+                    is_required = table.Column<bool>(type: "boolean", nullable: false),
+                    user_id = table.Column<string>(type: "text", nullable: true),
+                    field_options = table.Column<JsonNode>(type: "jsonb", nullable: true),
+                    ui_config = table.Column<JsonNode>(type: "jsonb", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_form_fields", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_form_fields_AspNetUsers_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "forms",
                 columns: table => new
                 {
@@ -187,35 +213,77 @@ namespace Former.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "submissions",
+                name: "form_submissions",
                 columns: table => new
                 {
                     id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
-                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    label = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    type = table.Column<byte>(type: "smallint", nullable: false),
-                    is_required = table.Column<bool>(type: "boolean", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: true),
-                    field_options = table.Column<JsonNode>(type: "jsonb", nullable: true),
-                    ui_config = table.Column<JsonNode>(type: "jsonb", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    FormId = table.Column<decimal>(type: "numeric(20,0)", nullable: true)
+                    form_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    submission_data = table.Column<JsonNode>(type: "jsonb", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_submissions", x => x.id);
+                    table.PrimaryKey("PK_form_submissions", x => x.id);
                     table.ForeignKey(
-                        name: "FK_submissions_AspNetUsers_user_id",
+                        name: "FK_form_submissions_AspNetUsers_user_id",
                         column: x => x.user_id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_submissions_forms_FormId",
-                        column: x => x.FormId,
+                        name: "FK_form_submissions_forms_form_id",
+                        column: x => x.form_id,
                         principalTable: "forms",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FormFormField",
+                columns: table => new
+                {
+                    FormFieldsId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    FormsId = table.Column<decimal>(type: "numeric(20,0)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormFormField", x => new { x.FormFieldsId, x.FormsId });
+                    table.ForeignKey(
+                        name: "FK_FormFormField_form_fields_FormFieldsId",
+                        column: x => x.FormFieldsId,
+                        principalTable: "form_fields",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FormFormField_forms_FormsId",
+                        column: x => x.FormsId,
+                        principalTable: "forms",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "form_submission_files",
+                columns: table => new
+                {
+                    id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    submission_id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    file_name = table.Column<string>(type: "text", nullable: false),
+                    file_directory = table.Column<string>(type: "text", nullable: false),
+                    content_type = table.Column<byte>(type: "smallint", nullable: false),
+                    content_format = table.Column<string>(type: "text", nullable: false),
+                    content_size = table.Column<long>(type: "bigint", nullable: false),
+                    uploaded_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_form_submission_files", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_form_submission_files_form_submissions_submission_id",
+                        column: x => x.submission_id,
+                        principalTable: "form_submissions",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -266,18 +334,33 @@ namespace Former.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_forms_user_id",
-                table: "forms",
+                name: "IX_form_fields_user_id",
+                table: "form_fields",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_submissions_FormId",
-                table: "submissions",
-                column: "FormId");
+                name: "IX_form_submission_files_submission_id",
+                table: "form_submission_files",
+                column: "submission_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_submissions_user_id",
-                table: "submissions",
+                name: "IX_form_submissions_form_id",
+                table: "form_submissions",
+                column: "form_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_form_submissions_user_id",
+                table: "form_submissions",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FormFormField_FormsId",
+                table: "FormFormField",
+                column: "FormsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_forms_user_id",
+                table: "forms",
                 column: "user_id");
         }
 
@@ -300,10 +383,19 @@ namespace Former.Database.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "submissions");
+                name: "form_submission_files");
+
+            migrationBuilder.DropTable(
+                name: "FormFormField");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "form_submissions");
+
+            migrationBuilder.DropTable(
+                name: "form_fields");
 
             migrationBuilder.DropTable(
                 name: "forms");
