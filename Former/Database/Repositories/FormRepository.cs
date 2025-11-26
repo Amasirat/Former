@@ -39,10 +39,16 @@ public class FormRepository : IFormRepository
         return newForm;
     }
     
-    // TODO
-    public Task<Form> UpdateFormAsync(UpdateFormDto form)
+    public async Task<Form?> UpdateFormAsync(UpdateFormDto updateFormDto)
     {
-        throw new NotImplementedException();
+        var formToUpdate = await GetFormByIdAsync(updateFormDto.Id);
+        
+        if(formToUpdate == null) return null;
+        
+        updateFormDto.UpdateFormFromDto(formToUpdate);
+        
+        await _context.SaveChangesAsync();
+        return formToUpdate;
     }
     
     private AppDbContext _context;

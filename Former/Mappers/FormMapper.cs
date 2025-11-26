@@ -35,4 +35,18 @@ public static class FormMapper
             Layout = form.Layout
         };
     }
+
+    public static Form UpdateFormFromDto(this UpdateFormDto updateFormDto, Form form)
+    {
+        form.Name = updateFormDto.Name;
+        form.Description = updateFormDto.Description;
+        form.IsAuthorizedLimited = updateFormDto.IsAuthorizedLimited;
+        form.Status = updateFormDto.Status;
+        form.Layout = updateFormDto.Layout;
+        form.UiConfig = updateFormDto.UiConfig;
+        form.IsArchived = updateFormDto.IsArchived;
+        
+        form.UpdatedAt = DateTime.Now.ToUniversalTime();
+        return form;
+    }
 }

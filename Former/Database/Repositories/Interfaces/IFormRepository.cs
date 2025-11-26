@@ -11,5 +11,5 @@ public interface IFormRepository
 
     Task<Form> CreateFormAsync(CreateFormDto createFormdto);
 
-    Task<Form> UpdateFormAsync(UpdateFormDto updateFormDto);
+    Task<Form?> UpdateFormAsync(UpdateFormDto updateFormDto);
 }

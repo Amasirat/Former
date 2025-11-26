@@ -6,6 +6,8 @@ namespace Former.Dtos.Forms;
 
 public class UpdateFormDto
 {
+    public ulong Id { get; set; }
+    
     [MaxLength(70)]
     public required string Name { get; set; }
     
@@ -21,6 +23,4 @@ public class UpdateFormDto
     public string? Description { get; set; }
     
     public bool IsArchived  { get; set; }
-    
-    private DateTime UpdatedAt { get; set; } = DateTime.Now;
 }

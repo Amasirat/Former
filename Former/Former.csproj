@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Dtos\FormSubmission\" />
+      <Folder Include="Dtos\FormSubmissions\" />
     </ItemGroup>
 
 </Project>
