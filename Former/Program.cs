@@ -29,6 +29,7 @@ public static class Program
     private static void ConfigureRepositories(IServiceCollection services)
     {
         services.AddScoped<IFormRepository, FormRepository>();
+        services.AddScoped<IFormFieldRepository, FormFieldRepository>();
     }
     
     private static void ConfigureAuth(IServiceCollection services)

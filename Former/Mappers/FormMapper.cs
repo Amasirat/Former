@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Former.Dtos.Forms;
 using Former.Models;
 
@@ -27,7 +26,7 @@ public static class FormMapper
             Description = form.Description,
             IsAuthorizedLimited = form.IsAuthorizedLimited,
             Status = form.Status,
-            Owner = form.User,
+            Owner = form.User.MapToUserDto(),
             UiConfig = form.UiConfig,
             IsArchived = form.IsArchived,
             CreatedAt = form.CreatedAt,

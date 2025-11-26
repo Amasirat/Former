@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Former.Dtos.Users;
 using Former.Models;
 
 namespace Former.Dtos.Forms;
 
 public class FormDto
 {
-    [MaxLength(70)]
+    [MaxLength(50)]
     public required string Name { get; set; }
     
     public required Form.StatusEnum Status { get; set; }
@@ -19,7 +20,7 @@ public class FormDto
     
     public Form.LayoutEnum Layout { get; set; }
     
-    public required User Owner { get; set; }
+    public required UserDto Owner { get; set; }
     
     public JsonNode? UiConfig { get; set; }
     

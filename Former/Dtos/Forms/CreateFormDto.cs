@@ -5,7 +5,7 @@ namespace Former.Dtos.Forms;
 
 public class CreateFormDto
 {
-    [MaxLength(70)]
+    [MaxLength(50)]
     public required string Name { get; set; }
     
     public required User User { get; set; }

@@ -9,7 +9,9 @@ public interface IFormRepository
     
     Task<Form?> GetFormByIdAsync(ulong id);
 
+    Task<List<Form>> GetFormsForUserAsync(string userId);
+
     Task<Form> CreateFormAsync(CreateFormDto createFormdto);
 
-    Task<Form?> UpdateFormAsync(UpdateFormDto updateFormDto);
+    Task<Form?> UpdateFormAsync(ulong id, UpdateFormDto updateFormDto);
 }

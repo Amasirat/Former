@@ -12,8 +12,9 @@ public class FormRepository : IFormRepository
     {
         _context = context;
     }
+    
     // Currently a very expensive Form Getter for testing purposes.
-    // A QueryBuilder might be necessary to access filtered data
+    // A QueryBuilder might be necessary to return filtered data
     public async Task<List<Form>> GetAllFormsAsync()
     {
         var forms = await _context.Forms.OrderBy(f => f.Id).ToListAsync();
@@ -21,7 +22,15 @@ public class FormRepository : IFormRepository
         return forms;
     }
     
-    // TODO: GetFormsForUserAsync method (Needs User DTO)
+    public async Task<List<Form>> GetFormsForUserAsync(string userId)
+    {
+        var userForms = await _context.Forms.
+            Where(ff => ff.User.Id.Equals(userId)).
+            OrderBy(ff => ff.Id).
+            ToListAsync();
+
+        return userForms;
+    }
     
     public async Task<Form?> GetFormByIdAsync(ulong id)
     {
@@ -39,9 +48,9 @@ public class FormRepository : IFormRepository
         return newForm;
     }
     
-    public async Task<Form?> UpdateFormAsync(UpdateFormDto updateFormDto)
+    public async Task<Form?> UpdateFormAsync(ulong id, UpdateFormDto updateFormDto)
     {
-        var formToUpdate = await GetFormByIdAsync(updateFormDto.Id);
+        var formToUpdate = await GetFormByIdAsync(id);
         
         if(formToUpdate == null) return null;
         
@@ -51,5 +60,5 @@ public class FormRepository : IFormRepository
         return formToUpdate;
     }
     
-    private AppDbContext _context;
+    private readonly AppDbContext _context;
 }

@@ -53,5 +53,5 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<FormSubmission> FormSubmissions { get; set; }
     public DbSet<FormSubmissionFile> FormSubmissionFiles { get; set; }
     
-    private IConfiguration _config;
+    private readonly IConfiguration _config;
 }
