@@ -14,7 +14,7 @@ public interface IFormFieldRepository
     
     Task<FormField> CreateFormFieldAsync(CreateFormFieldDto createFormdto);
     
-    Task<Form?> UpdateFormFieldAsync(ulong id, UpdateFormFieldDto updateFormdto);
+    Task<FormField?> UpdateFormFieldAsync(ulong id, UpdateFormFieldDto updateFormdto);
     
     Task<bool> DeleteFormFieldAsync(ulong id);
 }

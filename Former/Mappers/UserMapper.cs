@@ -17,6 +17,16 @@ public static class UserMapper
             EmailConfirmed = dto.EmailConfirmed
         };
     }
+    
+    public static User MapToUser(this CreateUserDto dto)
+    {
+        return new User
+        {
+            UserName = dto.UserName,
+            Email = dto.Email,
+            PhoneNumber = dto.PhoneNumber
+        };
+    }
 
     public static UserDto MapToUserDto(this User user)
     {

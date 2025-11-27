@@ -1,5 +1,6 @@
 using Former.Database.Repositories.Interfaces;
 using Former.Dtos.FormFields;
+using Former.Mappers;
 using Former.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,16 +37,27 @@ public class FormFieldRepository : IFormFieldRepository
         return formFields;
     }
     
-    // TODO
-    public Task<FormField> CreateFormFieldAsync(CreateFormFieldDto createFormdto)
+    public async Task<FormField> CreateFormFieldAsync(CreateFormFieldDto createFormFielddto)
     {
-        throw new NotImplementedException();
+        var formField = createFormFielddto.MapToFormField();
+        
+        await _context.FormFields.AddAsync(formField);
+        
+        await _context.SaveChangesAsync();
+        return formField;
     }
     
-    // TODO
-    public Task<Form?> UpdateFormFieldAsync(ulong id, UpdateFormFieldDto updateFormdto)
+    public async Task<FormField?> UpdateFormFieldAsync(ulong id, UpdateFormFieldDto updateFormdto)
     {
-        throw new NotImplementedException();
+        var formFieldToUpdate = await _context.FormFields.FirstOrDefaultAsync(ff => ff.Id == id);
+        
+        if(formFieldToUpdate == null) return null;
+
+        var formField = updateFormdto.MapToFormField(formFieldToUpdate);
+        
+        await _context.SaveChangesAsync();
+        
+        return formField;
     }
 
     public async Task<bool> DeleteFormFieldAsync(ulong id)

@@ -4,7 +4,7 @@ using Former.Models;
 
 namespace Former.Dtos.Forms;
 
-public class UpdateFormDto : CreateFormDto
+public class UpdateFormDto : FormBaseDto
 {
     public JsonObject? UiConfig { get; set; }
     
