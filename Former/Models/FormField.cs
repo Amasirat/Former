@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 
 namespace Former.Models;
 
-[Table("submissions")]
+[Table("form_fields")]
 public class FormField
 {
     [Column("id"), DatabaseGenerated(DatabaseGeneratedOption.Identity), Key]
@@ -13,7 +13,7 @@ public class FormField
     [Column("name"), MaxLength(50)]
     public required string Name { get; set; }
     
-    [Column("label")]
+    [Column("label"), MaxLength(50)]
     public required string Label { get; set; }
     
     [Column("description"), MaxLength(512)]
@@ -24,8 +24,8 @@ public class FormField
 
     [Column("is_required")] 
     public bool IsRequired { get; set; } = false;
-    
-    [ForeignKey("user_id")]
+
+    [ForeignKey("user_id")] 
     public required User User { get; set; }
     
     public List<Form> Forms { get; set; } = new List<Form>();

@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using Former.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Former.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251125135843_changedFormSubmission_v0.1")]
+    partial class changedFormSubmission_v01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,9 +61,9 @@ namespace Former.Database.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_archived");
 
-                    b.Property<bool>("IsAuthorizedLimited")
+                    b.Property<bool>("IsAuthorized")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_authorized_limited");
+                        .HasColumnName("is_authorized");
 
                     b.Property<int>("Layout")
                         .HasColumnType("integer")

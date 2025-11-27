@@ -6,5 +6,5 @@ public class User : IdentityUser
 {
     public List<Form> Forms { get; set; }
     public List<FormField> FormFields { get; set; }
-    public List<Submission> Submissions { get; set; }
+    public List<FormSubmission> Submissions { get; set; }
 }

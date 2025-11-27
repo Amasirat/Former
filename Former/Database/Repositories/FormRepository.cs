@@ -1,0 +1,64 @@
+using Former.Database.Repositories.Interfaces;
+using Former.Dtos.Forms;
+using Former.Mappers;
+using Former.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace Former.Database.Repositories;
+
+public class FormRepository : IFormRepository
+{
+    public FormRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+    
+    // Currently a very expensive Form Getter for testing purposes.
+    // A QueryBuilder might be necessary to return filtered data
+    public async Task<List<Form>> GetAllFormsAsync()
+    {
+        var forms = await _context.Forms.OrderBy(f => f.Id).ToListAsync();
+        
+        return forms;
+    }
+    
+    public async Task<List<Form>> GetFormsForUserAsync(string userId)
+    {
+        var userForms = await _context.Forms.
+            Where(ff => ff.User.Id.Equals(userId)).
+            OrderBy(ff => ff.Id).
+            ToListAsync();
+
+        return userForms;
+    }
+    
+    public async Task<Form?> GetFormByIdAsync(ulong id)
+    {
+        var form = await _context.Forms.FindAsync(id);
+        
+        return form ?? null;
+    }
+
+    public async Task<Form> CreateFormAsync(CreateFormDto createFormDto)
+    {
+        var newForm = createFormDto.MapToForm();
+        
+        await _context.Forms.AddAsync(newForm);
+        await _context.SaveChangesAsync();
+        return newForm;
+    }
+    
+    public async Task<Form?> UpdateFormAsync(ulong id, UpdateFormDto updateFormDto)
+    {
+        var formToUpdate = await GetFormByIdAsync(id);
+        
+        if(formToUpdate == null) return null;
+        
+        updateFormDto.UpdateFormFromDto(formToUpdate);
+        
+        await _context.SaveChangesAsync();
+        return formToUpdate;
+    }
+    
+    private readonly AppDbContext _context;
+}
